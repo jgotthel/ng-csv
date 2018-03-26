@@ -5,7 +5,7 @@
  * Author: asafdav - https://github.com/asafdav
  */
 angular.module('ngCsv.directives').
-  directive('ngCsv', ['$parse', '$q', 'CSV', '$document', '$timeout', function ($parse, $q, CSV, $document, $timeout) {
+  directive('ngCsv', ['$parse', '$q', 'CSV', function ($parse, $q, CSV) {
     return {
       restrict: 'AC',
       scope: {
@@ -99,17 +99,12 @@ angular.module('ngCsv.directives').
             navigator.msSaveBlob(blob, scope.getFilename());
           } else {
 
-            var downloadContainer = angular.element('<div data-tap-disabled="true"><a></a></div>');
-            var downloadLink = angular.element(downloadContainer.children()[0]);
-            downloadLink.attr('href', window.URL.createObjectURL(blob));
-            downloadLink.attr('download', scope.getFilename());
-            downloadLink.attr('target', '_blank');
+            var csvURL = window.URL.createObjectURL(blob);
+            var tempLink = document.createElement('a');
+            tempLink.href = csvURL;
+            tempLink.setAttribute('download', 'download.cv');
+            tempLink.click();
 
-            $document.find('body').append(downloadContainer);
-            $timeout(function () {
-              downloadLink[0].click();
-              downloadLink.remove();
-            }, null);
           }
         }
 

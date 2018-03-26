@@ -135,8 +135,11 @@ angular.module('ngCsv.services').
             var labelArray, labelString;
 
             labelArray = [];
-            angular.forEach(arrData[0], function(value, label) {
-                this.push(that.stringifyField(label, options));
+
+            var iterator = !!options.columnOrder ? options.columnOrder : arrData[0];
+            angular.forEach(iterator, function(value, label) {
+                var val = !!options.columnOrder ? value : label;
+                this.push(that.stringifyField(val, options));
             }, labelArray);
             labelString = labelArray.join(options.fieldSep ? options.fieldSep : ",");
             csvContent += labelString + EOL;
@@ -205,7 +208,7 @@ angular.module('ngCsv.services').
  * Author: asafdav - https://github.com/asafdav
  */
 angular.module('ngCsv.directives').
-  directive('ngCsv', ['$parse', '$q', 'CSV', '$document', '$timeout', function ($parse, $q, CSV, $document, $timeout) {
+  directive('ngCsv', ['$parse', '$q', 'CSV', function ($parse, $q, CSV) {
     return {
       restrict: 'AC',
       scope: {
@@ -268,10 +271,16 @@ angular.module('ngCsv.directives').
            */
           $scope.buildCSV = function () {
             var deferred = $q.defer();
+            var data = null;
 
             $element.addClass($attrs.ngCsvLoadingClass || 'ng-csv-loading');
 
-            CSV.stringify($scope.data(), getBuildCsvOptions()).then(function (csv) {
+            data = $scope.data();
+            if(angular.isFunction(data)){
+              data = data();
+            }
+
+            CSV.stringify(data, getBuildCsvOptions()).then(function (csv) {
               $scope.csv = csv;
               $element.removeClass($attrs.ngCsvLoadingClass || 'ng-csv-loading');
               deferred.resolve(csv);
@@ -293,17 +302,12 @@ angular.module('ngCsv.directives').
             navigator.msSaveBlob(blob, scope.getFilename());
           } else {
 
-            var downloadContainer = angular.element('<div data-tap-disabled="true"><a></a></div>');
-            var downloadLink = angular.element(downloadContainer.children()[0]);
-            downloadLink.attr('href', window.URL.createObjectURL(blob));
-            downloadLink.attr('download', scope.getFilename());
-            downloadLink.attr('target', '_blank');
+            var csvURL = window.URL.createObjectURL(blob);
+            var tempLink = document.createElement('a');
+            tempLink.href = csvURL;
+            tempLink.setAttribute('download', 'download.cv');
+            tempLink.click();
 
-            $document.find('body').append(downloadContainer);
-            $timeout(function () {
-              downloadLink[0].click();
-              downloadLink.remove();
-            }, null);
           }
         }
 

@@ -89,25 +89,21 @@ angular.module('ngCsv.directives').
         }
       ],
       link: function (scope, element, attrs) {
-        function doClick() {
-
-          var csvData = new Blob([scope.csv], {type: 'text/csv;charset=utf-8;'});
-          var csvURL =  null;
-          if (navigator.msSaveBlob) {
-            csvURL = navigator.msSaveBlob(csvData, scope.getFilename());
-          } else {
-            csvURL = window.URL.createObjectURL(csvData);
-          }
-          var tempLink = document.createElement('a');
-          tempLink.href = csvURL;
-          tempLink.setAttribute('download', scope.getFilename());
-          tempLink.click();
-
-        }
-
         element.bind('click', function (e) {
           scope.buildCSV().then(function (csv) {
-            doClick();
+
+            var csvData = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+            var csvURL =  null;
+            if (navigator.msSaveBlob) {
+              csvURL = navigator.msSaveBlob(csvData, scope.getFilename());
+            } else {
+              csvURL = window.URL.createObjectURL(csvData);
+            }
+            var tempLink = document.createElement('a');
+            tempLink.href = csvURL;
+            tempLink.setAttribute('download', scope.getFilename());
+            tempLink.click();
+
           });
           scope.$apply();
         });

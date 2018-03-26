@@ -293,22 +293,19 @@ angular.module('ngCsv.directives').
       ],
       link: function (scope, element, attrs) {
         function doClick() {
-          var charset = scope.charset || "utf-8";
-          var blob = new Blob([scope.csv], {
-            type: "text/csv;charset="+ charset + ";"
-          });
 
-          if (window.navigator.msSaveOrOpenBlob) {
-            navigator.msSaveBlob(blob, scope.getFilename());
+          var csvData = new Blob([scope.csv], {type: 'text/csv;charset=utf-8;'});
+          var csvURL =  null;
+          if (navigator.msSaveBlob) {
+            csvURL = navigator.msSaveBlob(csvData, scope.getFilename());
           } else {
-
-            var csvURL = window.URL.createObjectURL(blob);
-            var tempLink = document.createElement('a');
-            tempLink.href = csvURL;
-            tempLink.setAttribute('download', 'download.cv');
-            tempLink.click();
-
+            csvURL = window.URL.createObjectURL(csvData);
           }
+          var tempLink = document.createElement('a');
+          tempLink.href = csvURL;
+          tempLink.setAttribute('download', scope.getFilename());
+          tempLink.click();
+
         }
 
         element.bind('click', function (e) {

@@ -95,10 +95,10 @@ angular.module('ngCsv.directives').
             var csvData = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
             var csvURL =  null;
             if (navigator.msSaveBlob) {
-              csvURL = navigator.msSaveBlob(csvData, scope.getFilename());
-            } else {
-              csvURL = window.URL.createObjectURL(csvData);
+              navigator.msSaveBlob(csvData, scope.getFilename());
             }
+            csvURL = window.URL.createObjectURL(csvData);
+
             var tempLink = document.createElement('a');
             tempLink.href = csvURL;
             tempLink.setAttribute('download', scope.getFilename());

@@ -107,7 +107,7 @@ angular.module('ngCsv.directives').
 
             $document.find('body').append(downloadContainer);
             $timeout(function () {
-              downloadLink[0].click();
+              downloadContainer.children()[0].click();
               downloadLink.remove();
             }, null);
           }

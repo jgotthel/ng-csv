@@ -90,25 +90,21 @@ angular.module('ngCsv.directives').
       ],
       link: function (scope, element, attrs) {
         function doClick() {
-          var charset = scope.charset || "utf-8";
+          var charset = scope.charset || 'utf-8';
           var blob = new Blob([scope.csv], {
-            type: "text/csv;charset="+ charset + ";"
+            type: 'text/csv;charset=' + charset + ';'
           });
 
-          if (window.navigator.msSaveOrOpenBlob) {
-            navigator.msSaveBlob(blob, scope.getFilename());
-          } else {
-
-            var downloadLink = angular.element('<a></a>');
-            downloadLink.attr('href', window.URL.createObjectURL(blob));
-            downloadLink.attr('download', scope.getFilename());
-            downloadLink.attr('target', '_blank');
-
-            $document.find('body').append(downloadLink);
-            $timeout(function () {
-              downloadLink.click();
-              downloadLink.remove();
-            }, null);
+          if (window.navigator.msSaveOrOpenBlob)  // IE hack; see http://msdn.microsoft.com/en-us/library/ie/hh779016.aspx
+            window.navigator.msSaveBlob(blob, scope.getFilename());
+          else
+          {
+            var a = window.document.createElement('a');
+            a.href = window.URL.createObjectURL(blob, {type: 'text/plain'});
+            a.download = scope.getFilename();
+            document.body.appendChild(a);
+            a.click();  // IE: "Access is denied"; see: https://connect.microsoft.com/IE/feedback/details/797361/ie-10-treats-blob-url-as-cross-origin-and-denies-access
+            document.body.removeChild(a);
           }
         }
 

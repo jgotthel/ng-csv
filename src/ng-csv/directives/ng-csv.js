@@ -91,17 +91,16 @@ angular.module('ngCsv.directives').
       link: function (scope, element, attrs) {
         function doClick() {
           var charset = scope.charset || 'utf-8';
-          var blob = new Blob([scope.csv], {
-            type: 'text/csv;charset=' + charset + ';'
-          });
+          var blob = new Blob([scope.csv], { type: 'text/csv;charset=' + charset + ';' });
+          var filename = scope.getFilename();
 
           if (window.navigator.msSaveOrOpenBlob)  // IE hack; see http://msdn.microsoft.com/en-us/library/ie/hh779016.aspx
-            window.navigator.msSaveBlob(blob, scope.getFilename());
+            window.navigator.msSaveBlob(blob, filename);
           else
           {
             var a = window.document.createElement('a');
-            a.href = window.URL.createObjectURL(blob, {type: 'text/plain'});
-            a.download = scope.getFilename();
+            a.href = window.URL.createObjectURL(blob);
+            a.download = filename;
             document.body.appendChild(a);
             a.click();  // IE: "Access is denied"; see: https://connect.microsoft.com/IE/feedback/details/797361/ie-10-treats-blob-url-as-cross-origin-and-denies-access
             document.body.removeChild(a);

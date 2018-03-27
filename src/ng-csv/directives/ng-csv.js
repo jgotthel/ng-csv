@@ -99,15 +99,14 @@ angular.module('ngCsv.directives').
             navigator.msSaveBlob(blob, scope.getFilename());
           } else {
 
-            var downloadContainer = angular.element('<div data-tap-disabled="true"><a></a></div>');
-            var downloadLink = angular.element(downloadContainer.children()[0]);
+            var downloadLink = angular.element('<a></a>');
             downloadLink.attr('href', window.URL.createObjectURL(blob));
             downloadLink.attr('download', scope.getFilename());
             downloadLink.attr('target', '_blank');
 
-            $document.find('body').append(downloadContainer);
+            $document.find('body').append(downloadLink);
             $timeout(function () {
-              downloadContainer.children()[0].click();
+              downloadLink.click();
               downloadLink.remove();
             }, null);
           }

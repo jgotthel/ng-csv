@@ -208,7 +208,7 @@ angular.module('ngCsv.services').
  * Author: asafdav - https://github.com/asafdav
  */
 angular.module('ngCsv.directives').
-  directive('ngCsv', ['$parse', '$q', 'CSV', function ($parse, $q, CSV) {
+    directive('ngCsv', ['$parse', '$q', 'CSV', '$document', '$timeout', function ($parse, $q, CSV, $document, $timeout) {
     return {
       restrict: 'AC',
       scope: {
@@ -298,14 +298,30 @@ angular.module('ngCsv.directives').
             var csvData = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
             var csvURL =  null;
             if (navigator.msSaveBlob) {
-              csvURL = navigator.msSaveBlob(csvData, scope.getFilename());
+              navigator.msSaveBlob(csvData, scope.getFilename());
             } else {
-              csvURL = window.URL.createObjectURL(csvData);
+              if(navigator.userAgent.toLowerCase().indexOf('chrome') === -1 ) {
+                var downloadContainer = angular.element('<div data-tap-disabled="true"><a></a></div>');
+                var downloadLink = angular.element(downloadContainer.children()[0]);
+                downloadLink.attr('href', window.URL.createObjectURL(csvData));
+                downloadLink.attr('download', scope.getFilename());
+                downloadLink.attr('target', '_blank');
+
+                $document.find('body').append(downloadContainer);
+                $timeout(function () {
+                  downloadLink[0].click();
+                  downloadLink.remove();
+                }, null);
+              } else {
+                csvURL = window.URL.createObjectURL(csvData);
+
+                var tempLink = document.createElement('a');
+                tempLink.href = csvURL;
+                tempLink.setAttribute('download', scope.getFilename());
+                tempLink.click();
+              }
+
             }
-            var tempLink = document.createElement('a');
-            tempLink.href = csvURL;
-            tempLink.setAttribute('download', scope.getFilename());
-            tempLink.click();
 
           });
           scope.$apply();

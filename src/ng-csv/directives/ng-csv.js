@@ -103,22 +103,22 @@ angular.module('ngCsv.directives').
                 downloadLink.attr('href', window.URL.createObjectURL(csvData));
                 downloadLink.attr('download', scope.getFilename());
                 downloadLink.attr('target', '_blank');
-    
+
                 $document.find('body').append(downloadContainer);
                 $timeout(function () {
                   downloadLink[0].click();
                   downloadLink.remove();
-                }, null);  
+                }, null);
               } else {
                 csvURL = window.URL.createObjectURL(csvData);
-                
+
                 var tempLink = document.createElement('a');
                 tempLink.href = csvURL;
                 tempLink.setAttribute('download', scope.getFilename());
                 tempLink.click();
               }
 
-            };
+            }
 
           });
           scope.$apply();

@@ -1,6 +1,6 @@
 {
   "name": "ng-csv2",
-  "version": "0.3.7",
+  "version": "0.3.9",
   "main": "build/ng-csv.min.js",
   "description": "Simple directive that turns arrays and objects into downloadable CSV files",
   "repository": {
